@@ -122,7 +122,7 @@ elif display_type.lower() == "max":
 
 
 # API Request
-response_API = requests.get("https://api.example.com/data")  # Replace with a valid JSON API
+response_API = requests.get(https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM)  # Replace with a valid JSON API
 
 
 # Check if the request was successful
