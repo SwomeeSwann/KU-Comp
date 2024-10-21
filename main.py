@@ -60,8 +60,6 @@ elif display_type.lower() == "max":
 
 
 
-# THIS IS AI 
-
 import requests
 import json
 
@@ -95,7 +93,10 @@ def get_data(first_date, end_date, display_type, data_type, data):
         all_list = []
         for i in range(first_date_index, end_date_index + 1):
             all_list.append(data[data_index][i])
-        return all_list
+        if len(all_list) == 1:
+            return float(all_list[0])
+        else:
+            return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
         return minimum

@@ -1,20 +1,36 @@
 import requests
 import tkinter as tk
 
+weather_data = {
+    "data_type": "weather_code",
+    "value": "65.0",
+    "date": "2024-04-30"
+}
 
 window = tk.Tk()
 window.title("Window")
 window.geometry("600x600")
+
+def hide_get_ui():
+    button.place_forget()
+    data_box.place_forget()
+    date_box.place_forget()
 
 def handle_button_press(event):
     data_type = data_box.get()
     date = date_box.get()
 
     api_url = f"http://localhost:8000/?date={date}&data_type={data_type}"
+    request_response = requests.post(api_url, json=weather_data)
+    print(request_response.text)
 
-    response = requests.get(api_url)
 
+    get_response = requests.get(api_url)
+    print(get_response.text)
 
+def post_mode_handle(event):
+    hide_get_ui()
+    print("Post Time!")
 
 button = tk.Button(window, text="Get Data", width=15, height=5)
 button.bind("<Button-1>", handle_button_press)
@@ -25,6 +41,10 @@ data_box.place(x=100, y=100)
 
 date_box = tk.Entry(window, width=40)
 date_box.place(x=100, y=200)
+
+post_mode_button = tk.Button(window, text="Post", width=5, height=5)
+post_mode_button.bind("<Button-1>", post_mode_handle)
+post_mode_button.place(x=0, y=0)
 
 window.mainloop()
 
