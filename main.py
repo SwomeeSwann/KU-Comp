@@ -60,8 +60,13 @@ elif display_type.lower() == "max":
 
 
 
+# THIS IS AI 
+
 import requests
 import json
+import statistics
+
+data = []
 
 def parse_data(file_input, data):
     with open(file_input, 'r') as file:
@@ -86,6 +91,10 @@ def get_data(first_date, end_date, display_type, data_type, data):
     first_date_index = data[0].index(first_date)
     end_date_index = data[0].index(end_date)
 
+    averageList = []
+    for dates in range(first_date_index, end_date_index + 1):
+        averageList.append(float(data[i][dates]))
+    average = statistics.mean(averageList)
 
 
     # Prints to the user data on given dates
@@ -93,16 +102,20 @@ def get_data(first_date, end_date, display_type, data_type, data):
         all_list = []
         for i in range(first_date_index, end_date_index + 1):
             all_list.append(data[data_index][i])
-        if len(all_list) == 1:
-            return float(all_list[0])
-        else:
-            return all_list
+        return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
+        print(data_type, minimum)
         return minimum
     elif display_type.lower() == "max":
         maximum = max(float(data[data_index][i]))
+        print(data_type, maximum)
         return maximum
+    elif display_type.lower() == "average":
+        print(data_type, average)
+        return average
+
+
 
 if __name__ == "__main__":
     # Inputs
@@ -125,32 +138,10 @@ if __name__ == "__main__":
     # Find Data Type
 
 
-
     # Gets dates and their index
     first_date = input("From what date (inclusive)\n")
     end_date = input("To what date (inclusive)\n")
 
-    display_type = input("What data would you like (Max)(Min)(All)")
-
+    display_type = input("What data would you like (Max)(Min)(Average)(All)")
 
     get_data(first_date, end_date, display_type, data_type, data)
-
-"""
-
-# API Request
-response_API = requests.get(https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM)  # Replace with a valid JSON API
-
-
-# Check if the request was successful
-if response_API.status_code == 200:
-    try:
-        parsed_json = response_API.json()  # Use .json() method to parse JSON directly
-        print(parsed_json)  # Modify this line based on the JSON structure
-    except json.JSONDecodeError:
-        print("Response is not in valid JSON format.")
-else:
-    print(f"Failed to retrieve data: {response_API.status_code}")
-
-"""
-
-
