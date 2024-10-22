@@ -107,14 +107,14 @@ def get_data(first_date, end_date, display_type, data_type, data):
             return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
-        print(data_type, minimum)
+        print(data_type, " min: ", minimum)
         return minimum
     elif display_type.lower() == "max":
         maximum = max(float(data[data_index][i]))
-        print(data_type, maximum)
+        print(data_type, " max: ", maximum)
         return maximum
     elif display_type.lower() == "average":
-        print(data_type, average)
+        print(data_type, " average: ", average)
         return average
 
 
