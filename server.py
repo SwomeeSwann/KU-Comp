@@ -1,7 +1,8 @@
 import http.server
-import json
+import tkinter
 from urllib.parse import urlparse, parse_qs
 import main
+import json
 
 FILE = "weatherdata.txt"
 
@@ -14,17 +15,24 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         data_type = query_parameters.get('data_type')[0]
         data = []
 
+        with open('weatherdata.txt', 'r') as f:
+            file_lines = f.readlines()
 
-        main.parse_data("weatherdata.txt", data)
+        if not file_lines[0].find(weather_date) == -1:
+            main.parse_data("weatherdata.txt", data)
 
-        result = main.get_data(weather_date, weather_date, "all", data_type, data)
+            result = main.get_data(weather_date, weather_date, "all", data_type, data)
 
-        weather_summary = (f"The {data_type} on {weather_date} is {result}")
-
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain; charset=utf-8')
-        self.end_headers()
-        self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
+            weather_summary = (f"The {data_type} on {weather_date} is {result}")
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
+        else:
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(json.dumps(f"{weather_date} or {data_type} does not exist").encode("utf-8"))
 
     def do_POST(self):
         line_indexes = ["date", "weather_code", "temperature_max", "temperature_min", "precipitation_sum", "wind_speed_max", "precipitation_probability_max"]
@@ -108,8 +116,6 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
 
         weather_date = json.loads(post_data)
 
-    
-        
         with open('weatherdata.txt', 'r') as f:
             file_lines = f.readlines()
 
