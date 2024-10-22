@@ -64,6 +64,7 @@ elif display_type.lower() == "max":
 import requests
 import json
 import statistics
+import matplotlib.pyplot as plt
 
 data = []
 
@@ -89,22 +90,19 @@ def get_data(first_date, end_date, display_type, data_type, data):
 
     first_date_index = data[0].index(first_date)
     end_date_index = data[0].index(end_date)
+
+    all_list = []
+    for i in range(first_date_index, end_date_index + 1):
+        all_list.append(data[data_index][i])
+    
     if display_type.lower() == "average":
-        averageList = []
-        for dates in range(first_date_index, end_date_index + 1):
-            averageList.append(float(data[i][dates]))
-        average = statistics.mean(averageList)
+        average = statistics.mean(all_list)
 
 
     # Prints to the user data on given dates
     if display_type.lower() == "all":
-        all_list = []
-        for i in range(first_date_index, end_date_index + 1):
-            all_list.append(data[data_index][i])
-        if len(all_list) == 1:
-            return all_list[0]
-        else:
-            return all_list
+        print('All data of',data_type, all_list) 
+        return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
         print(data_type, " min: ", minimum)
@@ -116,6 +114,12 @@ def get_data(first_date, end_date, display_type, data_type, data):
     elif display_type.lower() == "average":
         print(data_type, " average: ", average)
         return average
+    
+    elif display_type.lower() == "histogram":
+        plt.hist(all_list, bins=len(all_list))
+        plt.xlabel(data_type)
+        plt.ylabel('Frequency')
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -143,6 +147,6 @@ if __name__ == "__main__":
     first_date = input("From what date (inclusive)\n")
     end_date = input("To what date (inclusive)\n")
 
-    display_type = input("What data would you like (Max)(Min)(Average)(All)")
+    display_type = input("What data would you like (Max)(Min)(Average)(All)(Histogram)")
 
     get_data(first_date, end_date, display_type, data_type, data)
