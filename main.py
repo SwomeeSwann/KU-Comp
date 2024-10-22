@@ -60,7 +60,6 @@ elif display_type.lower() == "max":
 
 
 
-# THIS IS AI 
 
 import requests
 import json
@@ -73,12 +72,12 @@ def parse_data(file_input, data):
         for line in file:
             line = line.strip()
             data.append(line)
-
-
+    
     for i in range(len(data)):
         data[i] = data[i].split(" ")
         data[i][0] = data[i][0].replace(":", "")
 
+    return data
 
 def get_data(first_date, end_date, display_type, data_type, data):
 
@@ -90,11 +89,11 @@ def get_data(first_date, end_date, display_type, data_type, data):
 
     first_date_index = data[0].index(first_date)
     end_date_index = data[0].index(end_date)
-
-    averageList = []
-    for dates in range(first_date_index, end_date_index + 1):
-        averageList.append(float(data[i][dates]))
-    average = statistics.mean(averageList)
+    if display_type.lower() == "average":
+        averageList = []
+        for dates in range(first_date_index, end_date_index + 1):
+            averageList.append(float(data[i][dates]))
+        average = statistics.mean(averageList)
 
 
     # Prints to the user data on given dates
@@ -102,7 +101,10 @@ def get_data(first_date, end_date, display_type, data_type, data):
         all_list = []
         for i in range(first_date_index, end_date_index + 1):
             all_list.append(data[data_index][i])
-        return all_list
+        if len(all_list) == 1:
+            return all_list[0]
+        else:
+            return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
         print(data_type, minimum)
@@ -114,7 +116,6 @@ def get_data(first_date, end_date, display_type, data_type, data):
     elif display_type.lower() == "average":
         print(data_type, average)
         return average
-
 
 
 if __name__ == "__main__":
