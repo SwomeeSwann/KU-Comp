@@ -3,6 +3,8 @@ import json
 import statistics
 import matplotlib.pyplot as plt
 import requests
+from date_comparison import *
+from open_weather_API import *
 
 data = []
 
@@ -62,11 +64,7 @@ def get_data(first_date, end_date, display_type, data_type, data):
         plt.ylabel('Frequency')
         plt.show()
 
-def get_liveWeather_from_api(api_key, lat, lon, time):
-    base_url = f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={api_key}&units={'imperial'}"
-    response = requests.get(base_url)
-    weather_data = response.json()
-    return weather_data
+
 
 
 
@@ -75,12 +73,17 @@ if __name__ == "__main__":
     liveData = input('Do you want to access live data?\n')
     #API
     if liveData.lower() == 'yes':
-        api_key = '5a614bbef05a248c1de15504b4d61ac1'
         lat = input("Enter the city's latitude: ")
         lon = input("Enter the city's longitude: ")
         time = input('What time would you like to check: ')
-        weather_data = get_liveWeather_from_api(api_key, lat, lon, time)
-        print(weather_data)
+        weather_data = get_api_data(lat, lon, time)
+
+
+# importing datetime module
+
+ 
+
+
 
     #Non-API
     else:
