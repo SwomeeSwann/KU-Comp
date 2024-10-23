@@ -4,6 +4,7 @@ import statistics
 import matplotlib.pyplot as plt
 import requests
 from date_comparison import *
+from open_weather_API import *
 
 data = []
 
@@ -63,11 +64,7 @@ def get_data(first_date, end_date, display_type, data_type, data):
         plt.ylabel('Frequency')
         plt.show()
 
-def get_liveWeather_from_api(api_key, lat, lon, time):
-    base_url = f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={api_key}&units={'imperial'}"
-    response = requests.get(base_url)
-    weather_data = response.json()
-    return weather_data
+
 
 
 
@@ -76,20 +73,10 @@ if __name__ == "__main__":
     liveData = input('Do you want to access live data?\n')
     #API
     if liveData.lower() == 'yes':
-        api_key = '5a614bbef05a248c1de15504b4d61ac1'
         lat = input("Enter the city's latitude: ")
         lon = input("Enter the city's longitude: ")
         time = input('What time would you like to check: ')
-        weather_data = get_liveWeather_from_api(api_key, lat, lon, time)
-        
-        {'lat': 40.7685, 'lon': 73.9822, 'timezone': 'Asia/Bishkek', 'timezone_offset': 21600, 
-         'data': [{'dt': 1456300800, 'sunrise': 1456278425, 'sunset': 1456318085, 
-                   'temp': 42.78, 'feels_like': 42.78, 'pressure': 1026, 'humidity': 21, 
-                   'dew_point': 8.38, 'clouds': 0, 'wind_speed': 1.61, 'wind_deg': 121, 
-                   'weather': [{'id': 800, 'main': 'Clear', 'description': 'clear sky', 'icon': '01d'}]}]}
-        temperature = weather_data['data'][0]['temp']
-        humidity = weather_data['data'][0]['humidity']
-        wind_speed = weather_data['data'][0]['wind_speed']
+        weather_data = get_api_data(lat, lon, time)
 
 
 # importing datetime module
