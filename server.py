@@ -61,10 +61,12 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         if file_lines[0].find(weather_date) == -1:
             for i in range(0, len(line_indexes)):
                 if i == 0:
-                    file_lines[i] = file_lines[i].strip() + " " + weather_date + "\n"
+                    file_lines[i] = file_lines[i].strip()
+                    file_lines[i] = file_lines[i].strip() + " " + weather_date +" \n"
                 else:
-                    file_lines[i] = file_lines[i].strip() + " " + weather_values[i - 1] + "\n"
-                    print(file_lines[i])
+                    file_lines[i] = file_lines[i].strip()
+                    file_lines[i] = file_lines[i] + " " + weather_values[i - 1] + " \n"
+
 
             with open('weatherdata.txt', 'w') as f:
                 f.writelines(file_lines)
@@ -96,7 +98,7 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         line_number = line_indexes.index(data_type)
         
 
-        if not file_lines[0].find(weather_date) == -1:
+        if not file_lines[0].find(weather_date) == -1 and data_type in line_indexes:
             
             weather_date_list = file_lines[0].strip().split(" ")
 
@@ -131,20 +133,22 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
 
         data = []
 
-
         main.parse_data("weatherdata.txt", data)
 
-        date_index = file_lines[0].strip().split(" ").index(weather_date)
+        if not file_lines[0].find(weather_date) == -1:
+            for i in range(len(line_indexes) - 1, -1, -1):
+                if i == 0:
+                    print('remove weather')
+                    file_lines[i] = file_lines[i].replace(weather_date + " ", "")
+                else:
+                    removal_value = main.get_data(weather_date, weather_date, "all", line_indexes[i], data)
+                    file_lines[i] = file_lines[i].replace(str(removal_value) + " ", "")
+                    
 
-        for i in range(0, len(file_lines)):
-            weather_value = main.get_data(weather_date, weather_date, "all", line_indexes[i], data) + " "
-            file_lines[i] = file_lines[i].strip().split(" ")
-            file_lines[i].pop(date_index)
-            file_lines[i] = " ".join(file_lines[i]) + "\n"
-        
-
-        with open('weatherdata.txt', 'w') as f:
-            f.writelines(file_lines)
+            
+            with open('weatherdata.txt', 'w') as f:
+                f.writelines(file_lines)
+                f.close()
 
         self.send_response(201)
         self.send_header('Content-type', "application/json")
