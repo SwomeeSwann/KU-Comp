@@ -136,15 +136,11 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         main.parse_data("weatherdata.txt", data)
 
         if not file_lines[0].find(weather_date) == -1:
-            for i in range(len(line_indexes) - 1, -1, -1):
-                if i == 0:
-                    print('remove weather')
-                    file_lines[i] = file_lines[i].replace(weather_date + " ", "")
-                else:
-                    removal_value = main.get_data(weather_date, weather_date, "all", line_indexes[i], data)
-                    file_lines[i] = file_lines[i].replace(str(removal_value) + " ", "")
+            for i in range(len(line_indexes) - 1, 0, -1):
+                removal_value = main.get_data(weather_date, weather_date, "all", line_indexes[i], data)
+                file_lines[i] = file_lines[i].replace(str(removal_value) + " ", "")
                     
-
+            file_lines[i] = file_lines[i].replace(weather_date + " ", "")
             
             with open('weatherdata.txt', 'w') as f:
                 f.writelines(file_lines)
