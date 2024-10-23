@@ -16,6 +16,7 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         weather_end_date = query_parameters.get('end_date')[0]
         data_type = query_parameters.get('data_type')[0]
         histogram_checked = query_parameters.get('histogram')[0]
+        display_type = query_parameters.get('display_type')[0]
         if weather_end_date.lower() == "none":
             data = []
 
@@ -26,7 +27,7 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
                 if weather_begin_date in file_lines[0] and len(weather_begin_date) == 10:
                     main.parse_data("weatherdata.txt", data)
 
-                    result = main.get_data(weather_begin_date, weather_begin_date, "single", data_type, data)
+                    result = main.get_data(weather_begin_date, weather_begin_date, display_type, data_type, data)
 
                     weather_summary = (f"The {data_type} on {weather_begin_date} is {result}")
                     self.send_response(200)
@@ -53,10 +54,11 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
             if weather_begin_date in file_lines[0] and len(weather_begin_date) == 10 and weather_end_date in file_lines[0] and len(weather_end_date) == 10:
                 main.parse_data("weatherdata.txt", data)
 
-                result = main.get_data(weather_begin_date, weather_end_date, "all", data_type, data)
-                for i in range(0, len(result)):
-                    result[i] = float(result[i])
-
+                result = main.get_data(weather_begin_date, weather_end_date, display_type, data_type, data)
+                if display_type.lower() == "all":
+                    for i in range(0, len(result)):
+                        result[i] = float(result[i])
+                        
                 if histogram_checked == "True":
                     main.get_data(weather_begin_date, weather_end_date, "histogram", data_type, data)
 

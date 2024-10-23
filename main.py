@@ -1,10 +1,11 @@
-import requests
-import json
 import statistics
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import requests
 from date_comparison import *
 from open_weather_API import *
+from datetime import datetime
+from math import ceil
 
 data = []
 
@@ -33,11 +34,11 @@ def get_data(first_date, end_date, display_type, data_type, data):
 
 
 
+    all_list = []
+    for i in range(first_date_index, end_date_index + 1):
+        data[data_index][i-6] = float(data[data_index][i-6])
+        all_list.append(data[data_index][i-6])
 
-
-
-    if display_type.lower() == "average":
-        average = statistics.mean(all_list)
 
     # Prints to the user data on given dates
     if display_type.lower() == "delete":
@@ -46,36 +47,50 @@ def get_data(first_date, end_date, display_type, data_type, data):
             all_list.append(data[data_index][i-6]) 
         return all_list
     if display_type.lower() == "all":
-        all_list = []
-        for i in range(first_date_index, end_date_index + 1):
-            all_list.append(data[data_index][i-6])
         print('All data of',data_type, all_list) 
         return all_list
     elif display_type.lower() == "min":
-        minimum = min(float(data[data_index][i]))
+        min_list = []
+        for i in range(first_date_index, end_date_index + 1):
+            min_list.append(data[data_index][i])
+        minimum = float(min(min_list))
         print(data_type, " min: ", minimum)
         return minimum
     elif display_type.lower() == "max":
-        maximum = max(float(data[data_index][i]))
+        max_list = []
+        for i in range(first_date_index, end_date_index + 1):
+            max_list.append(data[data_index][i])
+        maximum = float(max(max_list))
         print(data_type, " max: ", maximum)
         return maximum
     elif display_type.lower() == "average":
         print(data_type, " average: ", average)
+        average = statistics.mean(all_list)
         return average
     elif display_type.lower() == "single":
         i = data[0].index(first_date)
         return float(data[data_index][i])
     elif display_type.lower() == "histogram":
-        all_list = []
-        for i in range(first_date_index, end_date_index + 1):
-            all_list.append(data[data_index][i-6])
-        print('All data of',data_type, all_list) 
-        plt.hist(all_list, bins=len(all_list))
-        plt.xlabel(data_type)
-        plt.ylabel('Frequency')
-        plt.show()
+            all_list = []
+            date_list = []
+            for i in range(first_date_index, end_date_index + 1):
+                all_list.append(data[0][i])
+                date_list.append(float(data[data_index][i]))
+            print('All data of',data_type, all_list) 
 
+            fig = plt.figure(figsize=(10, 5))
 
+            plt.bar(all_list, date_list, color = 'blue', width = 0.4)
+            plt.xlabel('Dates')
+            plt.ylabel(data_type)
+            plt.show()
+
+def date_to_index(date):
+    date_index = data[0].index(date)
+    everything = []
+    for i in range(len(data)):
+        everything.append(data[data_index][i])
+    return everything
 
 
 
