@@ -31,21 +31,26 @@ def get_data(first_date, end_date, display_type, data_type, data):
     first_date_index = data[0].index(first_date)
     end_date_index = data[0].index(end_date)
 
-    all_list = []
-    for i in range(first_date_index, end_date_index + 1):
-        all_list.append(data[data_index][i])
+
+
+
+
 
     if display_type.lower() == "average":
         average = statistics.mean(all_list)
 
-
     # Prints to the user data on given dates
+    if display_type.lower() == "delete":
+        all_list = []
+        for i in range(end_date_index + 1, first_date_index + 1, -1):
+            all_list.append(data[data_index][i-6]) 
+        return all_list
     if display_type.lower() == "all":
+        all_list = []
+        for i in range(first_date_index, end_date_index + 1):
+            all_list.append(data[data_index][i-6])
         print('All data of',data_type, all_list) 
-        if len(all_list) == 1:
-            return float(all_list[0])
-        else:
-            return all_list
+        return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
         print(data_type, " min: ", minimum)
@@ -57,8 +62,14 @@ def get_data(first_date, end_date, display_type, data_type, data):
     elif display_type.lower() == "average":
         print(data_type, " average: ", average)
         return average
-    
+    elif display_type.lower() == "single":
+        i = data[0].index(first_date)
+        return float(data[data_index][i])
     elif display_type.lower() == "histogram":
+        all_list = []
+        for i in range(first_date_index, end_date_index + 1):
+            all_list.append(data[data_index][i-6])
+        print('All data of',data_type, all_list) 
         plt.hist(all_list, bins=len(all_list))
         plt.xlabel(data_type)
         plt.ylabel('Frequency')
@@ -113,4 +124,4 @@ if __name__ == "__main__":
 
         display_type = input("What data would you like (Max)(Min)(Average)(All)(Histogram)")
 
-        get_data(first_date, end_date, display_type, data_type, data)
+        print(get_data(first_date, end_date, display_type, data_type, data))

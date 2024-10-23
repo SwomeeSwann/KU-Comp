@@ -12,35 +12,60 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         query_parameters = parse_qs(parsed_url.query)
 
-        weather_date = query_parameters.get('date')[0]
+        weather_begin_date = query_parameters.get('begin_date')[0]
+        weather_end_date = query_parameters.get('end_date')[0]
         data_type = query_parameters.get('data_type')[0]
-        data = []
+        histogram_checked = query_parameters.get('histogram')[0]
+        if weather_end_date.lower() == "none":
+            data = []
 
-        with open('weatherdata.txt', 'r') as f:
-            file_lines = f.readlines()
+            with open('weatherdata.txt', 'r') as f:
+                file_lines = f.readlines()
 
-        if data_type in line_indexes:
-            if weather_date in file_lines[0] and len(weather_date) == 10:
+            if data_type in line_indexes:
+                if weather_begin_date in file_lines[0] and len(weather_begin_date) == 10:
+                    main.parse_data("weatherdata.txt", data)
+
+                    result = main.get_data(weather_begin_date, weather_begin_date, "single", data_type, data)
+
+                    weather_summary = (f"The {data_type} on {weather_begin_date} is {result}")
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/plain; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
+                else:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/plain; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(f"The date {weather_begin_date} was not found in database").encode("utf-8"))
+            else:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/plain; charset=utf-8')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(f"The data type {data_type} does not exist").encode("utf-8"))      
+        else:
+            data = []
+
+            with open('weatherdata.txt', 'r') as f:
+                file_lines = f.readlines()
+
+
+            if weather_begin_date in file_lines[0] and len(weather_begin_date) == 10 and weather_end_date in file_lines[0] and len(weather_end_date) == 10:
                 main.parse_data("weatherdata.txt", data)
 
-                result = main.get_data(weather_date, weather_date, "all", data_type, data)
+                result = main.get_data(weather_begin_date, weather_end_date, "all", data_type, data)
+                for i in range(0, len(result)):
+                    result[i] = float(result[i])
 
-                weather_summary = (f"The {data_type} on {weather_date} is {result}")
+                if histogram_checked == "True":
+                    main.get_data(weather_begin_date, weather_end_date, "histogram", data_type, data)
+
+
+                weather_summary = (f"The {data_type} on {weather_begin_date} to {weather_end_date} is {result}")
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain; charset=utf-8')
                 self.end_headers()
                 self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
-            else:
-                self.send_response(200)
-                self.send_header('Content-type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(json.dumps(f"The date {weather_date} was not found in database").encode("utf-8"))
-        else:
-                self.send_response(200)
-                self.send_header('Content-type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(json.dumps(f"The data type {data_type} does not exist").encode("utf-8"))      
-
 
     def do_POST(self):
         data_length = int(self.headers['Content-Length'])
@@ -62,7 +87,7 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
             for i in range(0, len(line_indexes)):
                 if i == 0:
                     file_lines[i] = file_lines[i].strip()
-                    file_lines[i] = file_lines[i].strip() + " " + weather_date +" \n"
+                    file_lines[i] = file_lines[i] + " " + weather_date +" \n"
                 else:
                     file_lines[i] = file_lines[i].strip()
                     file_lines[i] = file_lines[i] + " " + weather_values[i - 1] + " \n"
@@ -137,10 +162,11 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
 
         if not file_lines[0].find(weather_date) == -1:
             for i in range(len(line_indexes) - 1, 0, -1):
-                removal_value = main.get_data(weather_date, weather_date, "all", line_indexes[i], data)
+                removal_value = main.get_data(weather_date, weather_date, "single", line_indexes[i], data)
+                print(removal_value)
                 file_lines[i] = file_lines[i].replace(str(removal_value) + " ", "")
                     
-            file_lines[i] = file_lines[i].replace(weather_date + " ", "")
+            file_lines[0] = file_lines[0].replace(weather_date + " ", "")
             
             with open('weatherdata.txt', 'w') as f:
                 f.writelines(file_lines)
