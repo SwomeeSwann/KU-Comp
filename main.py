@@ -3,6 +3,7 @@ import json
 import statistics
 import matplotlib.pyplot as plt
 import requests
+from date_comparison import *
 
 data = []
 
@@ -80,7 +81,22 @@ if __name__ == "__main__":
         lon = input("Enter the city's longitude: ")
         time = input('What time would you like to check: ')
         weather_data = get_liveWeather_from_api(api_key, lat, lon, time)
-        print(weather_data)
+        
+        {'lat': 40.7685, 'lon': 73.9822, 'timezone': 'Asia/Bishkek', 'timezone_offset': 21600, 
+         'data': [{'dt': 1456300800, 'sunrise': 1456278425, 'sunset': 1456318085, 
+                   'temp': 42.78, 'feels_like': 42.78, 'pressure': 1026, 'humidity': 21, 
+                   'dew_point': 8.38, 'clouds': 0, 'wind_speed': 1.61, 'wind_deg': 121, 
+                   'weather': [{'id': 800, 'main': 'Clear', 'description': 'clear sky', 'icon': '01d'}]}]}
+        temperature = weather_data['data'][0]['temp']
+        humidity = weather_data['data'][0]['humidity']
+        wind_speed = weather_data['data'][0]['wind_speed']
+
+
+# importing datetime module
+
+ 
+
+
 
     #Non-API
     else:
