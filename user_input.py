@@ -14,11 +14,13 @@
 
 keywords = {'weather_code', 'temperature_max', 'temperature_min', 'precipitation_sum',
             'wind_speed_max', 'precipitation_probability_max'}
+statistic_keyword = {'max', 'min', 'average'}
 
-usertext = input("sdlfkjsdlkfj ")
+usertext = "What is the precipitation_sum on day 5"
 
 def translate_user_input(usertext):
     description = None
+    statistic = None
     start_date = None
     end_date = None
     
@@ -27,15 +29,18 @@ def translate_user_input(usertext):
         word = words[pos]
         if word in keywords:
             description = word
+        if word.lower() in statistic_keyword:
+            statistic = word
         if word == 'from':
             remaining_words = words[pos+1:]
             s, e = translate_dates(remaining_words, start_date, end_date)
-            return(description, s, e)
+            return(statistic, description, s, e)
         elif word == 'on':
             remaining_words = words[pos+1:]
             day = translate_date(remaining_words)
-            return(description, day)
-    return(description, s, e)
+            return(statistic, description, day)
+
+
 
 #pass in list of words of dates, returns start_date, end_date
 #ex. day 0 to day 6
