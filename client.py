@@ -4,27 +4,17 @@ from PyQt5.QtWidgets import *
 import sys
 
 weather_data = {
-    "data_type": "weather_code",
-    "value": "71.0",
-    "date": "2024-04-29"
+    "date": "2024-04-30",
+    "values": "71.0 50.3423 41.3144 0.2304991 12.320984 50.0",
 }
 
 delete_data = {
-    "date": "2024-04-30"
+    "date": "2024-04-29"
 }
 
 app = QApplication([])
 window = QWidget()
 
-def hide_get_ui():
-    button.place_forget()
-    data_box.place_forget()
-    date_box.place_forget()
-
-def show_get_ui():
-    button.place(x=250, y=250)
-    data_box.place(x=100, y=100)
-    date_box.place(x=100, y=200)
 
 def on_button_clicked():
     data_type = type_text.text()
@@ -32,8 +22,8 @@ def on_button_clicked():
     if not data_type == "" and not date == "":
 
         api_url = f"http://localhost:8000/?date={date}&data_type={data_type}"
-        #request_response = requests.post(api_url, json=weather_data)
-        #print(request_response.text)
+        request_response = requests.post(api_url, json=weather_data)
+        print(request_response.text)
 
         #put_response = requests.put(api_url, json=weather_data)
 
@@ -52,7 +42,7 @@ get_output_label.setStyleSheet("font-size: 24px;")
 window_layout = QVBoxLayout()
 
 type_text = QLineEdit()
-type_text.setPlaceholderText("Enter your data")
+type_text.setPlaceholderText("Enter your data (Ex: weather_code)")
 type_text.show()
 type_text.setStyleSheet("""
     background-color: black;
@@ -62,7 +52,7 @@ type_text.setStyleSheet("""
 """)
 
 data_text = QLineEdit()
-data_text.setPlaceholderText("Enter your date")
+data_text.setPlaceholderText("Enter your date (yyyy-mm-dd)")
 data_text.show()
 data_text.setStyleSheet("""
     QLineEdit {

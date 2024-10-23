@@ -5,6 +5,7 @@ import main
 import json
 
 FILE = "weatherdata.txt"
+line_indexes = ["date", "weather_code", "temperature_max", "temperature_min", "precipitation_sum", "wind_speed_max", "precipitation_probability_max"]
 
 class ServerDataHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -18,42 +19,52 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
         with open('weatherdata.txt', 'r') as f:
             file_lines = f.readlines()
 
-        if not file_lines[0].find(weather_date) == -1:
-            main.parse_data("weatherdata.txt", data)
+        if data_type in line_indexes:
+            if weather_date in file_lines[0] and len(weather_date) == 10:
+                main.parse_data("weatherdata.txt", data)
 
-            result = main.get_data(weather_date, weather_date, "all", data_type, data)
+                result = main.get_data(weather_date, weather_date, "all", data_type, data)
 
-            weather_summary = (f"The {data_type} on {weather_date} is {result}")
-            self.send_response(200)
-            self.send_header('Content-type', 'text/plain; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
+                weather_summary = (f"The {data_type} on {weather_date} is {result}")
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps(weather_summary).encode("utf-8"))
+            else:
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps(f"The date {weather_date} was not found in database").encode("utf-8"))
         else:
-            self.send_response(200)
-            self.send_header('Content-type', 'text/plain; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(json.dumps(f"{weather_date} or {data_type} does not exist").encode("utf-8"))
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(json.dumps(f"The data type {data_type} does not exist").encode("utf-8"))      
+
 
     def do_POST(self):
-        line_indexes = ["date", "weather_code", "temperature_max", "temperature_min", "precipitation_sum", "wind_speed_max", "precipitation_probability_max"]
         data_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(data_length)
 
         weather_data = json.loads(post_data)
 
-        data_type = weather_data.get('data_type', 'No Value')
-        weather_value = weather_data.get('value', 'No Value')
+
         weather_date = weather_data.get('date', 'No Value')
+        weather_values = weather_data.get('values', 'No Value')
 
         with open('weatherdata.txt', 'r') as f:
             file_lines = f.readlines()
 
-        line_number = line_indexes.index(data_type)
-        
+        weather_values = weather_values.strip().split(" ")
+
 
         if file_lines[0].find(weather_date) == -1:
-            file_lines[line_number] = file_lines[line_number].strip() + " " + weather_value + "\n"
-            file_lines[0] = file_lines[0].strip() + " " + weather_date + "\n"
+            for i in range(0, len(line_indexes)):
+                if i == 0:
+                    file_lines[i] = file_lines[i].strip() + " " + weather_date + "\n"
+                else:
+                    file_lines[i] = file_lines[i].strip() + " " + weather_values[i - 1] + "\n"
+                    print(file_lines[i])
 
             with open('weatherdata.txt', 'w') as f:
                 f.writelines(file_lines)
@@ -110,7 +121,6 @@ class ServerDataHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_DELETE(self):
-        line_indexes = ["date", "weather_code", "temperature_max", "temperature_min", "precipitation_sum", "wind_speed_max", "precipitation_probability_max"]
         data_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(data_length)
 

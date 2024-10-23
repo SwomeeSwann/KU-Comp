@@ -32,7 +32,7 @@ def get_data(first_date, end_date, display_type, data_type, data):
     all_list = []
     for i in range(first_date_index, end_date_index + 1):
         all_list.append(data[data_index][i])
-    
+
     if display_type.lower() == "average":
         average = statistics.mean(all_list)
 
@@ -40,7 +40,10 @@ def get_data(first_date, end_date, display_type, data_type, data):
     # Prints to the user data on given dates
     if display_type.lower() == "all":
         print('All data of',data_type, all_list) 
-        return all_list
+        if len(all_list) == 1:
+            return float(all_list[0])
+        else:
+            return all_list
     elif display_type.lower() == "min":
         minimum = min(float(data[data_index][i]))
         print(data_type, " min: ", minimum)
